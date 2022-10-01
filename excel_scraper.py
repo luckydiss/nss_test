@@ -16,8 +16,8 @@ def create_csv(out_file_path, days_num, headers):
 
     return days
 
-def save_csv(out_file_path, headers, values):
-    with open(out_file_path, 'a', newline='', encoding='utf-16') as file:
+def update_csv(out_file_path, headers, values):
+    with open(out_file_path, 'a', encoding='utf-16', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=headers)
         writer.writerow(values)
 
@@ -29,34 +29,35 @@ def get_activites_data(sheet,days_num):
 
     for cell in sheet['Z']:
         filter_cell = sheet.cell(row=cell.row, column=column_index_from_string('BY')).value
-        work_name = sheet.cell(row=cell.row, column=column_index_from_string('L')).value
         start_column_id = column_index_from_string('AS')
 
         if cell.value == 'план' and type(filter_cell) == int:
+            work_name = sheet.cell(row=cell.row, column=column_index_from_string('L')).value
             plan_list = [c.value for c in sheet[cell.row][start_column_id - 1: start_column_id + 30]]
 
-            values_dict = {
+            plan_values_dict = {
                 'Наименование работ': work_name + '_act',
                 'план/факт': 'план',
             }
 
             plan_dict = dict(zip(days, plan_list))
-            values_dict.update(plan_dict)
+            plan_values_dict.update(plan_dict)
 
-            save_csv(output_dir, headers, values_dict)
+            update_csv(output_dir, headers, plan_values_dict)
 
         if cell.value == 'факт' and type(filter_cell) == int:
+            work_name = sheet.cell(row=cell.row - 1, column=column_index_from_string('L')).value
             fact_list = [c.value for c in sheet[cell.row][start_column_id - 1: start_column_id + 30]]
 
-            values_dict = {
-                'Наименование работ': work_name,
+            fact_values_dict = {
+                'Наименование работ': work_name + '_act',
                 'план/факт': 'факт',
             }
 
             fact_dict = dict(zip(days, fact_list))
-            values_dict.update(fact_dict)
+            fact_values_dict.update(fact_dict)
 
-            save_csv(output_dir, headers, values_dict)
+            update_csv(output_dir, headers, fact_values_dict)
 
 def get_resources_data(sheet, days_num):
     output_dir = 'output/res_file_5.csv'
@@ -71,27 +72,27 @@ def get_resources_data(sheet, days_num):
         if cell.row >= 4 and type(cell.value) == str:
             plan_list = [c.value for c in sheet[cell.row][start_column_id - 1: start_column_id + days_num]]
             fact_list = [c.value for c in sheet[cell.row + 1][start_column_id - 1: start_column_id + days_num]]
-            values_dict = {
+            plan_values_dict = {
                 'Ресурсы': resource_name + '_res',
                 'Субподрядчик': cell.value,
                 'план/факт': 'план',
             }
 
             plan_dict = dict(zip(days, plan_list))
-            values_dict.update(plan_dict)
+            plan_values_dict.update(plan_dict)
 
-            save_csv(output_dir, headers, values_dict)
+            update_csv(output_dir, headers, plan_values_dict)
 
-            values_dict = {
+            fact_values_dict = {
                 'Ресурсы': resource_name + '_res',
                 'Субподрядчик': cell.value,
                 'план/факт': 'факт',
             }
 
             fact_dict = dict(zip(days, fact_list))
-            values_dict.update(fact_dict)
+            fact_values_dict.update(fact_dict)
 
-            save_csv(output_dir, headers, values_dict)
+            update_csv(output_dir, headers, fact_values_dict)
 
 def main():
     inp_file_path = 'data/5.xlsm'
