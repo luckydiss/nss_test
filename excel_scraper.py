@@ -4,6 +4,7 @@ from openpyxl.utils import column_index_from_string
 import csv
 
 def create_csv(out_file_path, days_num, headers):
+    """creates a csv file with the passed headers"""
     days = [day for day in range(0,days_num)]
     headers = headers
 
@@ -17,11 +18,13 @@ def create_csv(out_file_path, days_num, headers):
     return days
 
 def update_csv(out_file_path, headers, values):
+    """updates the csv file line by line"""
     with open(out_file_path, 'a', encoding='utf-16', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=headers)
         writer.writerow(values)
 
 def get_activites_data(sheet,days_num):
+    """collects data about activities"""
     output_dir = 'output/act_file_5.csv'
     headers = ['Наименование работ', 'план/факт']
 
@@ -60,6 +63,7 @@ def get_activites_data(sheet,days_num):
             update_csv(output_dir, headers, fact_values_dict)
 
 def get_resources_data(sheet, days_num):
+    """collects data about resources"""
     output_dir = 'output/res_file_5.csv'
     headers = ['Ресурсы', 'Субподрядчик', 'план/факт']
 
