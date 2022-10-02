@@ -5,7 +5,7 @@ import csv
 
 def create_csv(out_file_path, days_num, headers):
     """creates a csv file with the passed headers"""
-    days = [day for day in range(0,days_num)]
+    days = [day for day in range(1,days_num+1)]
     headers = headers
 
     for day in days:
@@ -71,7 +71,7 @@ def get_resources_data(sheet, days_num):
 
     for cell in sheet['B']:
         resource_name = sheet.cell(row=cell.row, column=column_index_from_string('A')).value
-        start_column_id = column_index_from_string('G')
+        start_column_id = column_index_from_string('D')
 
         if cell.row >= 4 and type(cell.value) == str:
             plan_list = [c.value for c in sheet[cell.row][start_column_id - 1: start_column_id + days_num]]
@@ -85,7 +85,9 @@ def get_resources_data(sheet, days_num):
             plan_dict = dict(zip(days, plan_list))
             plan_values_dict.update(plan_dict)
 
-            update_csv(output_dir, headers, plan_values_dict)
+            # только пустые значения в строке не добавляются в csv
+            if set(plan_dict.values()) != {None} and set(plan_dict.values()) != {0}:
+                update_csv(output_dir, headers, plan_values_dict)
 
             fact_values_dict = {
                 'Ресурсы': resource_name + '_res',
@@ -96,7 +98,11 @@ def get_resources_data(sheet, days_num):
             fact_dict = dict(zip(days, fact_list))
             fact_values_dict.update(fact_dict)
 
-            update_csv(output_dir, headers, fact_values_dict)
+            # только пустые значения в строке не добавляются в csv
+            print(fact_dict)
+            if set(fact_dict.values()) != {None} and set(fact_dict.values()) != {0}:
+                print('зашел')
+                update_csv(output_dir, headers, fact_values_dict)
 
 def main():
     inp_file_path = 'data/5.xlsm'
@@ -105,7 +111,7 @@ def main():
     activities_sheet = wb['МСГ']
     resources_sheet = wb['Ресурсы']
 
-    get_activites_data(activities_sheet, 30)
+    #get_activites_data(activities_sheet, 30)
     get_resources_data(resources_sheet, 30)
 
 if __name__ == "__main__":
