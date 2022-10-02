@@ -111,7 +111,7 @@ def main():
     activities_sheet = wb['МСГ']
     resources_sheet = wb['Ресурсы']
 
-    #get_activites_data(activities_sheet, 30)
+    get_activites_data(activities_sheet, 30)
     get_resources_data(resources_sheet, 30)
 
 if __name__ == "__main__":
